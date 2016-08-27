@@ -16,6 +16,8 @@ public class MoveCamera : MonoBehaviour
     public Button leftButton;
     public Button rightButton;
 
+    Camera gameCam;
+
     void Awake()
     {
         toVector = Camera.main.transform.position; //default
