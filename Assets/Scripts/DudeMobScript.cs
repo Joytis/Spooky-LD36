@@ -63,9 +63,21 @@ public class DudeMobScript : MonoBehaviour {
 		return -(mag);
 	}
 
-	float snap_rotation_(float rot)
+	float snap_rotation_()
 	{
+		float cur_rot = tnsf.rotation.y;
+		float rot_off = cur_rot % segment_offset;
+		float ret_val;
+		if(rot_off > segment_offset/2.0f)
+		{
+			ret_val = (segment_offset - rot_off);
+		}
+		else
+		{
+			ret_val =  -(rot_off);
+		}
 
+		return ret_val;
 	}
 
 	//
@@ -110,5 +122,6 @@ public class DudeMobScript : MonoBehaviour {
 	void OnMouseUp()
 	{
 		Cursor.visible = true;
+		tnsf.transform.RotateAround(rot_axis, plane_tangent_norm, snap_rotation_());
 	}
 }
