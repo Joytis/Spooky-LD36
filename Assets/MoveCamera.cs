@@ -15,9 +15,15 @@ public class MoveCamera : MonoBehaviour
     Vector3 toVector;
     public Button leftButton;
     public Button rightButton;
+    GameObject leftImage;
+    GameObject rightImage;
 
     void Awake()
     {
+        leftImage = GameObject.Find("fuzzyLeft");
+        rightImage = GameObject.Find("fuzzyRight");
+        leftImage.SetActive(false);
+        rightImage.SetActive(false);
         toVector = Camera.main.transform.position; //default
         int cameraMoveAmount = BGspriteWidth / 460;
         cameraPositionsArray[1] = Camera.main.transform.position;
@@ -49,14 +55,19 @@ public class MoveCamera : MonoBehaviour
                     if (i == 0) //WE IS LEFT ALREADY
                     {
                         toVector = Camera.main.transform.position; //default
+                        leftButton.gameObject.SetActive(false);
                     }
                     else if (i == 1) //WE IS MID
                     {
                         toVector = cameraPositionsArray[0];
+                        leftButton.gameObject.SetActive(false);
+                        leftImage.SetActive(true);
                     }
                     else //THIS IS THE RIGHT
                     {
                         toVector = cameraPositionsArray[1];
+                        leftButton.gameObject.SetActive(false);
+                        leftImage.SetActive(true);
                     }
                 }
             }
@@ -75,14 +86,19 @@ public class MoveCamera : MonoBehaviour
                     if (i == 2) //WE IS RIGHT ALREADY
                     {
                         toVector = Camera.main.transform.position; //default
+                        rightButton.gameObject.SetActive(false);
                     }
                     else if (i == 1) //WE IS MID
                     {
                         toVector = cameraPositionsArray[2];
+                        rightButton.gameObject.SetActive(false);
+                        rightImage.SetActive(true);
                     }
                     else //THIS IS THE Left
                     {
                         toVector = cameraPositionsArray[1];
+                        rightButton.gameObject.SetActive(false);
+                        rightImage.SetActive(true);
                     }
                 }
             }
@@ -98,6 +114,10 @@ public class MoveCamera : MonoBehaviour
             {
                 movingLeft = false;
                 movingRight = false;
+                leftButton.gameObject.SetActive(true);
+                rightButton.gameObject.SetActive(true);
+                leftImage.SetActive(false);
+                rightImage.SetActive(false);
             }
         }
     }
