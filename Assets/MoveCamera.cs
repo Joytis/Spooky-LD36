@@ -18,6 +18,8 @@ public class MoveCamera : MonoBehaviour
     GameObject leftImage;
     GameObject rightImage;
 
+    Camera gameCam;
+
     void Awake()
     {
         leftImage = GameObject.Find("fuzzyLeft");

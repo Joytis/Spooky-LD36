@@ -6,11 +6,15 @@ public class Collider2DRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
 {
     Collider2D myCollider;
     RectTransform rectTransform;
+    private Vector3 screenPoint, offset, defaultLocalScale, snapToPos;
+    bool inInventory;
 
     void Awake()
     {
         myCollider = GetComponent<Collider2D>();
         rectTransform = GetComponent<RectTransform>();
+        defaultLocalScale = transform.localScale;
+        inInventory = false;
     }
 
     #region ICanvasRaycastFilter implementation
@@ -33,7 +37,44 @@ public class Collider2DRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
     {
         if(IsRaycastLocationValid(Input.mousePosition, Camera.main))
         {
-            Debug.Log("YOU CLICKED THE HIEROGLYPH");
+            screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+            offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
+        }
+    }
+
+    void OnMouseDrag()
+    {
+        Vector3 cursorPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
+        Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(cursorPoint) + offset;
+        transform.position = cursorPosition;
+    }
+
+    void OnMouseUp()
+    {
+        if(inInventory)
+        {
+            SnapToInventory(snapToPos);
+        }
+    }
+    
+    void SnapToInventory(Vector3 pos)
+    {
+        inInventory = true;
+        transform.position = pos;
+        if (transform.localScale == defaultLocalScale)
+        {
+            transform.localScale *= .5f;
+        }
+
+        snapToPos = pos;
+    }
+
+    void ExitInventory()
+    {
+        inInventory = false;
+        if (transform.localScale != defaultLocalScale)
+        {
+            transform.localScale /= .5f;
         }
     }
 }
