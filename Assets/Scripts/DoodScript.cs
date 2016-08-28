@@ -3,6 +3,8 @@ using System.Collections;
 
 public class DoodScript : MonoBehaviour {
 
+	LayerMask cast_layer;
+
 	float _lockedY;
 	SpriteRenderer sprRnd;
 	Color col = new Color(0,0,0);
@@ -19,23 +21,40 @@ public class DoodScript : MonoBehaviour {
 
 	public Sprite dudes;
 
+	PolygonCollider2D pol_col;
+
 	// Use this for initialization
 	void Start () {
 		tangent_norm = Vector3.zero;
 		plane_tangent_norm = Vector3.forward;
-		rot_axis = Vector3.zero;
+		prnt_tnsf = this.transform.parent.transform;
+		rot_axis = prnt_tnsf.position;
+
 
 		sprRnd = GetComponent<SpriteRenderer>();
 		//sprRnd.color = new Color(0,0,0);
 
 		radius_pos = this.transform.parent.GetComponent<DudeMobScript>().child_radius;
-		this.transform.position = this.transform.position.normalized * radius_pos;
+		this.transform.position = (this.transform.position * radius_pos) + prnt_tnsf.position;
 
-		prnt_tnsf = this.transform.parent.GetComponent<Transform>();
+		//gameObject.layer = LayerMask.NameToLayer("DudeLay1");
+
+		this.tag = "piece";
+
+		pol_col = this.GetComponent<PolygonCollider2D>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+		{
+			pol_col.enabled = false;
+		}
+		else
+		{
+			pol_col.enabled = true;
+		}
+	
 		//col.r += Random.Range(-1f, 1f);
 		//if(col.r < 0) col.r = 0;
 		//if(col.r > 1) col.r = 1;
@@ -60,7 +79,11 @@ public class DoodScript : MonoBehaviour {
 
 		float tan = tangent_norm.y / tangent_norm.x;
 		float rot =  Mathf.Atan(tan);
-		float rot_dev = rot * Mathf.Rad2Deg;		
+		float rot_dev = rot * Mathf.Rad2Deg;	
+
+		Debug.DrawLine(prnt_tnsf.position, gameObject.transform.position, Color.red);
+		Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + tangent_norm, Color.red);
+
 
 		if((tangent_norm.x < 0))
 		{
