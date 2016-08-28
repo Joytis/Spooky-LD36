@@ -37,6 +37,7 @@ public class InventoryManager : MonoBehaviour {
         {
             if (placeItemInInventory(other.gameObject))
             {
+                Debug.Log("motherf");
                 other.gameObject.SendMessage("SnapToInventory", slotPosition[Array.IndexOf(invItem, other.gameObject)]);
             }
         }
