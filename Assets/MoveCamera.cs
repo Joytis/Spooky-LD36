@@ -110,6 +110,7 @@ public class MoveCamera : MonoBehaviour
         Camera.main.transform.position = Vector3.Lerp(from, to, Time.deltaTime * transitionAmmountPerFrame);
         if (Mathf.Round(Camera.main.transform.position.x) == to.x)
         {
+            Camera.main.transform.position = to;
             movingLeft = false;
             movingRight = false;
             leftButton.gameObject.SetActive(true);
