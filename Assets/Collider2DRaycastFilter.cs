@@ -47,14 +47,18 @@ public class Collider2DRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
         Vector3 cursorPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
         Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(cursorPoint) + offset;
         transform.position = cursorPosition;
-        Debug.Log("transform.position: " + transform.position);
     }
 
     void OnMouseUp()
     {
-        if(inInventory)
+        Debug.Log("on mouse up");
+        if (inInventory)
         {
-            SnapToInventory(snapToPos);
+            transform.position = snapToPos;
+            if (transform.localScale.x >= defaultLocalScale.x)
+            {
+                transform.localScale = .5f * defaultLocalScale;
+            }
         }
     }
 
@@ -77,13 +81,8 @@ public class Collider2DRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
     void SnapToInventory(Vector3 pos)
     {
         inInventory = true;
-        transform.position = pos;
-        if (transform.localScale.x >= defaultLocalScale.x)
-        {
-            transform.localScale = .5f * defaultLocalScale;
-        }
-
         snapToPos = pos;
+        Debug.Log("hey it tried to do inventory");
     }
 
     void ExitInventory()
