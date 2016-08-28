@@ -23,15 +23,17 @@ public class DoodScript : MonoBehaviour {
 	void Start () {
 		tangent_norm = Vector3.zero;
 		plane_tangent_norm = Vector3.forward;
-		rot_axis = Vector3.zero;
+		prnt_tnsf = this.transform.parent.transform;
+		rot_axis = prnt_tnsf.position;
 
 		sprRnd = GetComponent<SpriteRenderer>();
 		//sprRnd.color = new Color(0,0,0);
 
 		radius_pos = this.transform.parent.GetComponent<DudeMobScript>().child_radius;
-		this.transform.position = this.transform.position.normalized * radius_pos;
+		this.transform.position = (this.transform.position * radius_pos) + prnt_tnsf.position;
 
-		prnt_tnsf = this.transform.parent.GetComponent<Transform>();
+
+		this.tag = "piece";
 	}
 	
 	// Update is called once per frame
@@ -60,7 +62,11 @@ public class DoodScript : MonoBehaviour {
 
 		float tan = tangent_norm.y / tangent_norm.x;
 		float rot =  Mathf.Atan(tan);
-		float rot_dev = rot * Mathf.Rad2Deg;		
+		float rot_dev = rot * Mathf.Rad2Deg;	
+
+		Debug.DrawLine(prnt_tnsf.position, gameObject.transform.position, Color.red);
+		Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + tangent_norm, Color.red);
+
 
 		if((tangent_norm.x < 0))
 		{

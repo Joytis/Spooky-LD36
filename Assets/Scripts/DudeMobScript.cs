@@ -51,10 +51,18 @@ public class DudeMobScript : MonoBehaviour {
 		Debug.Log(segment_offset);
 		tnsf = GetComponent<Transform>();
 
+		float sin;
+		float cos;
 		for(int i = 0; i < segments; i++)
 		{
-			Vector3 norm = new Vector3(1, 0, 0);
-			Vector3 c_pos = Quaternion.Euler(0, 0, (segment_offset * i)) * norm;
+			float seg_o = (segment_offset * i) * Mathf.Deg2Rad;
+			sin = Mathf.Sin(seg_o);
+			cos = Mathf.Cos(seg_o);
+
+			Vector3 c_pos = new Vector3(cos, sin, 0);
+			//c_pos += transform.position;
+
+			//Debug.Log(c_pos);
 			GameObject temp = (GameObject)Instantiate(dudes[i], c_pos, Quaternion.identity);
 			temp.transform.parent = tnsf;
 			temp.GetComponent<PieceInfo>().puzzle_index = i;
