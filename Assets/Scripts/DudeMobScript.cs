@@ -6,8 +6,10 @@ public class DudeMobScript : MonoBehaviour {
 	// public dude vars
 	public GameObject[] 	dudes;
 	public GameObject[]		correct_mask;
+	public GameObject[] 	dudes_handle;
 
 	public int 				right_most_index;
+	public LayerMask 		cast_layer;
 
 	public bool 			has_correct;
 	// Stuff variables
@@ -40,6 +42,8 @@ public class DudeMobScript : MonoBehaviour {
 	Camera 					game_cam;
 
 	bool 					s_toggle;
+
+	CircleCollider2D 		circ_col;
 		
 	float rotation;
 	// Use this for initialization
@@ -53,6 +57,8 @@ public class DudeMobScript : MonoBehaviour {
 		Debug.Log(segment_offset);
 		tnsf = GetComponent<Transform>();
 
+		dudes_handle = new GameObject[dudes.Length];
+
 		float sin;
 		float cos;
 		for(int i = 0; i < segments; i++)
@@ -64,12 +70,14 @@ public class DudeMobScript : MonoBehaviour {
 			Vector3 c_pos = new Vector3(cos, sin, 0);
 			//c_pos += transform.position;
 
-			//Debug.Log(c_pos);
-			GameObject temp = (GameObject)Instantiate(dudes[i], c_pos, Quaternion.identity);
-			temp.transform.parent = tnsf;
-			temp.GetComponent<PieceInfo>().puzzle_index = i;
 
-			child_height = (temp.GetComponent<SpriteRenderer>().sprite.rect.height) / 100f;
+
+			//Debug.Log(c_pos);
+			dudes_handle[i] = (GameObject)Instantiate(dudes[i], c_pos, Quaternion.identity);
+			dudes_handle[i].transform.parent = tnsf;
+			dudes_handle[i].GetComponent<PieceInfo>().puzzle_index = i;
+
+			child_height = (dudes_handle[i].GetComponent<SpriteRenderer>().sprite.rect.height) / 100f;
 		}
 
 		CircleCollider2D ccol = this.transform.GetComponents<CircleCollider2D>()[0];
@@ -80,11 +88,20 @@ public class DudeMobScript : MonoBehaviour {
 		game_cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
 
 		s_toggle = false;
+
+		circ_col = this.GetComponent<CircleCollider2D>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+		{
+			circ_col.enabled = true;
+		}
+		else
+		{
+			circ_col.enabled = false;
+		}
 	}
 
 	// Private member functions
@@ -160,8 +177,7 @@ public class DudeMobScript : MonoBehaviour {
 
 			start = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
 			s_toggle = true;
-		}
-	}
+		}	}
 
 	void OnMouseDrag()
 	{
