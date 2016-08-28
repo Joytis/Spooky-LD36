@@ -24,8 +24,12 @@ public class InventoryManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-	
-	}
+        slotPosition[6] = transform.position + new Vector3(3f, 0f, 0f);
+        for (int i = 5; i >= 0; i--)
+        {
+            slotPosition[i] = slotPosition[i + 1] - new Vector3(1f, 0f, 0f);
+        }
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -57,6 +61,7 @@ public class InventoryManager : MonoBehaviour {
             if(invItem[i] == null)
             {
                 invItem[i] = item;
+                item.transform.SetParent(gameObject.transform);
                 return true;
             }
         }
@@ -71,6 +76,7 @@ public class InventoryManager : MonoBehaviour {
             if(invItem[i] != null && invItem[i].Equals(item))
             {
                 invItem[i] = null;
+                item.transform.SetParent(null);
                 return true;
             }
         }

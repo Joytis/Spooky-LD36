@@ -47,6 +47,7 @@ public class Collider2DRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
         Vector3 cursorPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
         Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(cursorPoint) + offset;
         transform.position = cursorPosition;
+        Debug.Log("transform.position: " + transform.position);
     }
 
     void OnMouseUp()
@@ -56,14 +57,30 @@ public class Collider2DRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
             SnapToInventory(snapToPos);
         }
     }
+
+    void OnMouseOver()
+    {
+        if (inInventory)
+        {
+            transform.localScale = defaultLocalScale / .5f;
+        }
+    }
+
+    void OnMouseExit()
+    {
+        if (inInventory)
+        {
+            transform.localScale = .5f * defaultLocalScale;
+        }
+    }
     
     void SnapToInventory(Vector3 pos)
     {
         inInventory = true;
         transform.position = pos;
-        if (transform.localScale == defaultLocalScale)
+        if (transform.localScale.x >= defaultLocalScale.x)
         {
-            transform.localScale *= .5f;
+            transform.localScale = .5f * defaultLocalScale;
         }
 
         snapToPos = pos;
@@ -72,9 +89,17 @@ public class Collider2DRaycastFilter : MonoBehaviour, ICanvasRaycastFilter
     void ExitInventory()
     {
         inInventory = false;
-        if (transform.localScale != defaultLocalScale)
+        if (transform.localScale.x <= defaultLocalScale.x)
         {
-            transform.localScale /= .5f;
+            transform.localScale = defaultLocalScale;
+        }
+    }
+
+    void Update()
+    {
+        if(!inInventory)
+        {
+            transform.localScale = defaultLocalScale;
         }
     }
 }
