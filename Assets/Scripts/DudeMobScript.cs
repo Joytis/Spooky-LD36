@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//
+// Cool Guy was here B) (Clark)
+//========================================
+
 public class DudeMobScript : MonoBehaviour {
 
 	// public dude vars
@@ -177,7 +181,8 @@ public class DudeMobScript : MonoBehaviour {
 
 			start = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
 			s_toggle = true;
-		}	}
+		}	
+	}
 
 	void OnMouseDrag()
 	{
@@ -243,6 +248,4 @@ public class DudeMobScript : MonoBehaviour {
 	{
 
 	}
-
-
 }
