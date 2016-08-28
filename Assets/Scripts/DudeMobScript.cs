@@ -5,7 +5,11 @@ public class DudeMobScript : MonoBehaviour {
 
 	// public dude vars
 	public GameObject[] 	dudes;
+	public GameObject[]		correct_mask;
 
+	public int 				right_most_index;
+
+	public bool 			has_correct;
 	// Stuff variables
 	// TODO(clark): Make child_radius private and determined byt he height of the image. 
 	public float 			child_radius;
@@ -14,6 +18,8 @@ public class DudeMobScript : MonoBehaviour {
 		
 	float 					_lockedY;
 	float 					rot_mag;
+
+	float 					child_height;
 		
 	Transform 				tnsf;
 		
@@ -37,6 +43,7 @@ public class DudeMobScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
+		has_correct = false;
 
 		segments = dudes.Length;
 		Debug.Log(segments);
@@ -50,7 +57,13 @@ public class DudeMobScript : MonoBehaviour {
 			Vector3 c_pos = Quaternion.Euler(0, 0, (segment_offset * i)) * norm;
 			GameObject temp = (GameObject)Instantiate(dudes[i], c_pos, Quaternion.identity);
 			temp.transform.parent = tnsf;
+			temp.GetComponent<PieceInfo>().puzzle_index = i;
+
+			child_height = (temp.GetComponent<SpriteRenderer>().sprite.rect.height) / 100f;
 		}
+
+		CircleCollider2D ccol = this.transform.GetComponents<CircleCollider2D>()[0];
+		ccol.radius = child_height/2 + child_radius;
 
 		plane_tangent_norm = Vector3.forward;
 
@@ -64,6 +77,31 @@ public class DudeMobScript : MonoBehaviour {
 
 	// Private member functions
 	// returns the scalar projection of proj onto vector norm
+	bool check_right_most_()
+	{
+		bool ret_val;
+
+		float pot_rotation = 360f - (segment_offset * right_most_index);
+		//Debug.Log("pot_rotation: " + pot_rotation);
+		float left_bound = pot_rotation + 10;
+		//Debug.Log("left_bound: " + left_bound);
+		float right_bound = pot_rotation - 10;
+		//Debug.Log("right_bound: " + right_bound);
+		float rot_ang = tnsf.rotation.eulerAngles.z;
+		//Debug.Log("rot_ang: " + rot_ang);
+		if( left_bound > rot_ang && rot_ang > right_bound )
+		{
+			ret_val = true;
+		}
+		else
+		{
+			ret_val = false;
+		}
+
+		return ret_val;
+	}
+
+
 	float vectorProjection_(Vector3 norm, Vector3 proj)
 	{
 		float angle = Vector3.Angle(norm, proj);
@@ -84,9 +122,7 @@ public class DudeMobScript : MonoBehaviour {
 	float snap_rotation_()
 	{
 		float cur_rot = tnsf.rotation.eulerAngles.z;
-		Debug.Log(cur_rot);
 		float rot_off = cur_rot % segment_offset;
-		Debug.Log(rot_off);
 		float ret_val;
 		if(rot_off > segment_offset/2.0f)
 		{
@@ -96,7 +132,6 @@ public class DudeMobScript : MonoBehaviour {
 		{
 			ret_val = -(rot_off);
 		}
-		Debug.Log(ret_val);
 
 		return ret_val;
 	}
@@ -107,7 +142,7 @@ public class DudeMobScript : MonoBehaviour {
 	void OnMouseDown()
 	{
 		Debug.Log("Mouse Down");
-		Cursor.visible = false;
+		//Cursor.visible = false;
 
 		start = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
 	}
@@ -129,9 +164,8 @@ public class DudeMobScript : MonoBehaviour {
 		tangent_norm = Vector3.Cross(radial_norm, plane_tangent_norm);
 		rot_mag = vectorProjection_(tangent_norm, w_offset);
 
-		tnsf.transform.RotateAround(rot_axis, plane_tangent_norm, (rot_mag * 50));
+		tnsf.transform.RotateAround(rot_axis, plane_tangent_norm, (rot_mag * 20));
 
-		Debug.Log(tnsf.rotation.z);
 
 		start = end;
 		//rot_axis = prnt_tnsf.position;
@@ -144,8 +178,31 @@ public class DudeMobScript : MonoBehaviour {
 	void OnMouseUp()
 	{
 		Debug.Log("Mouse Up");
-		Cursor.visible = true;
-		//Debug.Log(snap_rotation_());
+		//Cursor.visible = true;
+
 		tnsf.transform.RotateAround(rot_axis, plane_tangent_norm, snap_rotation_());
+		if(tnsf.transform.eulerAngles.z == -180)
+		{
+			tnsf.transform.eulerAngles = new Vector3(0, 0, 180);
+		}
+
+		has_correct = true;
+		for(int i = 0; i < correct_mask.Length; i++ )
+		{
+			if( dudes[i] != correct_mask[i] ) has_correct = false;
+		}
+		if(has_correct)
+		{
+			has_correct = check_right_most_();
+		}
+
+		Debug.Log(has_correct);
 	}
+
+	public void add_game_object(int index, GameObject obj)
+	{
+
+	}
+
+
 }
