@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//
+// Cool Guy was here B) (Clark)
+//========================================
+
 public class DoodScript : MonoBehaviour {
 
 	LayerMask cast_layer;
