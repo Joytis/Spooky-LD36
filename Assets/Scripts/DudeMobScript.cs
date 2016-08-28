@@ -38,6 +38,8 @@ public class DudeMobScript : MonoBehaviour {
 	Vector3 				tangent_norm;
 		
 	Camera 					game_cam;
+
+	bool 					s_toggle;
 		
 	float rotation;
 	// Use this for initialization
@@ -51,10 +53,18 @@ public class DudeMobScript : MonoBehaviour {
 		Debug.Log(segment_offset);
 		tnsf = GetComponent<Transform>();
 
+		float sin;
+		float cos;
 		for(int i = 0; i < segments; i++)
 		{
-			Vector3 norm = new Vector3(1, 0, 0);
-			Vector3 c_pos = Quaternion.Euler(0, 0, (segment_offset * i)) * norm;
+			float seg_o = (segment_offset * i) * Mathf.Deg2Rad;
+			sin = Mathf.Sin(seg_o);
+			cos = Mathf.Cos(seg_o);
+
+			Vector3 c_pos = new Vector3(cos, sin, 0);
+			//c_pos += transform.position;
+
+			//Debug.Log(c_pos);
 			GameObject temp = (GameObject)Instantiate(dudes[i], c_pos, Quaternion.identity);
 			temp.transform.parent = tnsf;
 			temp.GetComponent<PieceInfo>().puzzle_index = i;
@@ -68,6 +78,8 @@ public class DudeMobScript : MonoBehaviour {
 		plane_tangent_norm = Vector3.forward;
 
 		game_cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+
+		s_toggle = false;
 	}
 	
 	// Update is called once per frame
@@ -141,37 +153,49 @@ public class DudeMobScript : MonoBehaviour {
 	//=====================================
 	void OnMouseDown()
 	{
-		Debug.Log("Mouse Down");
-		//Cursor.visible = false;
+		if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+		{
+			Debug.Log("Mouse Down");
+			//Cursor.visible = false;
 
-		start = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+			start = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+			s_toggle = true;
+		}
 	}
 
 	void OnMouseDrag()
 	{
-		end = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
-		//rotation = -(offset.x/5);
-		//tnsf.transform.RotateAround(Vector3.zero, Vector3.forward, rotation);
+		if((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+			&& s_toggle == true)
+		{
+			end = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+			//rotation = -(offset.x/5);
+			//tnsf.transform.RotateAround(Vector3.zero, Vector3.forward, rotation);
 
-		w_end = game_cam.ScreenToWorldPoint(end);
-		w_start = game_cam.ScreenToWorldPoint(start);
-		w_offset = w_end - w_start;
+			w_end = game_cam.ScreenToWorldPoint(end);
+			w_start = game_cam.ScreenToWorldPoint(start);
+			w_offset = w_end - w_start;
 
-		rot_axis = tnsf.position;
-		radial = w_start - rot_axis;
-		radial_norm = radial.normalized;
+			rot_axis = tnsf.position;
+			radial = w_start - rot_axis;
+			radial_norm = radial.normalized;
 
-		tangent_norm = Vector3.Cross(radial_norm, plane_tangent_norm);
-		rot_mag = vectorProjection_(tangent_norm, w_offset);
+			tangent_norm = Vector3.Cross(radial_norm, plane_tangent_norm);
+			rot_mag = vectorProjection_(tangent_norm, w_offset);
 
-		tnsf.transform.RotateAround(rot_axis, plane_tangent_norm, (rot_mag * 20));
+			tnsf.transform.RotateAround(rot_axis, plane_tangent_norm, (rot_mag * 20));
 
 
-		start = end;
-		//rot_axis = prnt_tnsf.position;
-		//radial = gameObject.transform.position - rot_axis;
-		//radial_norm = radial.normalized;
-		//tangent_norm = Vector3.Cross(radial_norm, plane_tangent_norm);
+			start = end;
+			//rot_axis = prnt_tnsf.position;
+			//radial = gameObject.transform.position - rot_axis;
+			//radial_norm = radial.normalized;
+			//tangent_norm = Vector3.Cross(radial_norm, plane_tangent_norm);
+		}
+		else
+		{
+			s_toggle = false;
+		}
 
 	}
 
